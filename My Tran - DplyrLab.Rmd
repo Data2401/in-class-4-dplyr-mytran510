@@ -1,5 +1,6 @@
 ---
 title: "Intro to dplyr -  Lab"
+author: "My Tran"
 output: html_document
 ---
 ```{r}
@@ -28,7 +29,10 @@ starwars %>% filter(species == "Human") %>% plot(mass ~ height, data = .)
 Now, change this to see the same plot for the Droids. 
 
 ```{r}
+humans <- starwars %>% filter(species == "Droid")
+plot(humans$height, humans$mass)
 
+starwars %>% filter(species == "Droid") %>% plot(mass ~ height, data = .)
 
 ```
 
@@ -36,7 +40,7 @@ Now, change this to see the same plot for the Droids.
 How many characters are from each planet?
 
 ```{r}
-
+starwars %>% group_by(homeworld) %>% summarise(n())
 
 
 ```
@@ -44,13 +48,14 @@ How many characters are from each planet?
 If you wanted to arrange this in descending order, what would you add to the pipe? 
 
 ```{r}
+starwars %>% group_by(homeworld) %>% summarise(n=n()) %>% arrange(desc(n))
 
 ```
 
 Find the average height for each eye color.
 
 ```{r}
-
+starwars %>% group_by(eye_color) %>% summarise(mean(height))
 
 ```
 
@@ -58,21 +63,35 @@ What's with the NAs? Filter down to just brown eyes find out.
 
 
 ```{r}
+starwars %>% group_by(eye_color) %>% summarise(mean(height)) %>% filter(eye_color == "brown")
+
 ```
 
 Okay, so we have missing data here. Try summarising with `na.omit(height)` instead of just `height` or adding `na.rm = T` to the mean function inside summarize. 
 
 
 ```{r}
-
+starwars %>% group_by(eye_color) %>% summarise(mean(na.omit(height))) %>% filter(eye_color == "brown")
 
 ```
 
-So, who is the tallest male? How many blue eyed women are there? How many genders are there? Answer these questions and spend some time asking and answering some of your own. 
-
+So, who is the tallest male? 
 
 ```{r}
-
+starwars %>% filter(sex == "male" & height == max(na.omit(height)))
+filter(starwars, sex == "male", height == max(na.omit(height)))
 ```
 
+How many blue eyed women are there? 
 
+```{r}
+starwars %>% filter(sex == "female" & eye_color == "blue") %>% summarise(blue_eyed_women = n())
+```
+
+How many genders are there? 
+
+```{r}
+starwars<- na.omit(starwars) 
+starwars %>%  group_by(gender) %>% summarise(number_genders = nrow(gender))
+
+```
